@@ -145,6 +145,7 @@ class SiglipEncoderLayer(nn.Module):
         hidden_states = hidden_states + residual
 
         return hidden_states
+    
 class SiglipEncoder(nn.Module):
     def __init__(self, config: SiglipVisionConfig):
         super().__init__()
@@ -160,7 +161,6 @@ class SiglipEncoder(nn.Module):
         
         return hidden_states
     
-
 class SiglipVisionEmbeddings(nn.Module):
     def __init__(self, config: SiglipVisionConfig):
         super().__init__()
