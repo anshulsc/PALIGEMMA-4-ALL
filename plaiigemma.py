@@ -53,14 +53,14 @@ def normalize(
 def process_images(
         images: List[Image.Image],
         size: Dict[str, int] = None, 
-        resmaple: Image.Resampling = None,
+        resample: Image.Resampling = None,
         rescale_factor: float = None,
         image_mean: Optional[Union[float, List[float]]] = None,
         image_std: Optional[Union[float, List[float]]] = None,
 ) -> List[np.ndarray]:
     height, width = size["height"], size["width"]
     images = [
-        resize(image=image, size=(height, width), resample=resample)
+        resize(image=images, size=(height, width), resample=resample)
     ]
     
     images = [np.array(image) for image in images]
