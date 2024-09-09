@@ -46,10 +46,6 @@ def normalize(
     image = (image - mean) / std
     return image
 
-
-
-
-
 def process_images(
         images: List[Image.Image],
         size: Dict[str, int] = None, 

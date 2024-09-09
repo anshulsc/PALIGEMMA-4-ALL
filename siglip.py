@@ -71,6 +71,7 @@ class SiglipAttention(nn.Module):
 
         attn_weights = nn.functional.dropout(attn_weights, p=self.dropout, training=self.training)
 
+        # [Batch_Size, Num_Heads, Num_Patches, Num_Patches] x [Batch_Size, Num_Heads, Num_Patches, Head_Dim] -> [Batch_Size, Num_Heads, Num_Patches, Head_Dim]
         attn_output = torch.matmul(attn_weights, value_states)
 
         if attn_output.size() != (batch_size, self.num_heads, seq_len, self.head_dim):
@@ -86,11 +87,6 @@ class SiglipAttention(nn.Module):
         attn_output = self.out_proj(attn_output)
 
         return attn_output
-
-
-
-
-
 
 
 class SiglipMLP(nn.Module):
@@ -179,6 +175,12 @@ class SiglipVisionEmbeddings(nn.Module):
         self.num_patches = (self.image_size // self.patch_size) ** 2
         self.num_positions = self.num_patches
         self.positon_embedding = nn.Embedding(self.num_positions, self.emebed_dim)
+
+        # Registering position_ids as a buffer in the model
+        # - This tensor holds position indices [0, 1, 2, ..., num_positions-1] and is used for positional encoding.
+        # - We use `register_buffer` to store it as a non-trainable tensor (i.e., it won't be updated during backpropagation).
+        # - Setting `persistent=False` ensures it won't be saved to the model's state_dict (since it can be easily recomputed).
+        # - This buffer automatically moves to the correct device (CPU/GPU) along with the model, making it convenient for use in forward passes.
         self.register_buffer(
             "position_ids",
             torch.arange(self.num_positions).expand(1, -1),
@@ -232,9 +234,9 @@ class SiglipVisionModel(nn.Module):
         self.config = config
         self.vision_model = SiglipVisionTransformer(config) 
 
-    def forward(self, pixel_values):
+    def forward(self, pixel_values): 
 
-        # [Batch_Size, Channels, Height, Width] -> [Batch_Size, Num_Patches, Hidden_Size]
+        # [Batch_Size, Channels, Height, Width] -> [Batch_Size, Num_Patches, Embed_Dim]
 
         return self.vision_model(pixel_values=pixel_values)
     
